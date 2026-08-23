@@ -1,0 +1,45 @@
+name: Portfolio Briefing
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    # KST 평일 오전 07:45
+    # UTC 기준 전날 22:45
+    - cron: "45 22 * * 0-4"
+
+jobs:
+  briefing:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Playwright Chromium
+        run: |
+          python -m playwright install --with-deps chromium
+
+      - name: Generate portfolio briefing
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python portfolio_briefing_pipeline.py
+
+      - name: Upload briefing
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-briefing
+          path: |
+            briefing_input.json
+            briefing.md
