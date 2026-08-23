@@ -36,6 +36,14 @@ jobs:
         run: |
           python portfolio_briefing_pipeline.py
 
+      - name: Send briefing email
+        env:
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          BRIEFING_TO: ${{ secrets.BRIEFING_TO }}
+        run: |
+          python send_email.py
+
       - name: Upload briefing
         uses: actions/upload-artifact@v4
         with:
